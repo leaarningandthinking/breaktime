@@ -33,8 +33,11 @@ final class BreakScheduler: ObservableObject {
         for i in store.breaks.indices where store.breaks[i].nextDue == nil {
             store.breaks[i].nextDue = Date().addingTimeInterval(store.breaks[i].everyMinutes * 60)
         }
+        // Timer fires on the main run loop, so we are already on the main actor
+        // here — no hop needed. `[weak self]` keeps the timer from retaining the
+        // scheduler (capturing the weak binding in a Task would be a data race).
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.tick() }
+            MainActor.assumeIsolated { self?.tick() }
         }
     }
 

@@ -6,6 +6,9 @@
 #   ./build.sh arm64 x86_64 → explicit list
 #
 # Only the Xcode Command Line Tools are required (no full Xcode, no packages).
+#
+# The Swift language version is pinned so a local build and the CI runner
+# (which ships a different Xcode) compile the source identically.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -28,6 +31,7 @@ for ARCH in "${ARCHS[@]}"; do
   swiftc Sources/*.swift \
     -o "$BUILD_DIR/BreakTime-$ARCH" \
     -target "$ARCH-apple-macosx$MIN_MACOS" \
+    -swift-version 5 \
     -O
   BINARIES+=("$BUILD_DIR/BreakTime-$ARCH")
 done

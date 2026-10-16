@@ -238,7 +238,8 @@ struct AppMark: View {
 }
 
 /// Screen-reader + shared strings for the toolbar (current UI language).
-final class LocalizedStrings {
+/// Immutable after init, so it is safe to share across concurrency domains.
+final class LocalizedStrings: Sendable {
     static let shared = LocalizedStrings()
     let lang: Lang
     init() { lang = UserDefaults.standard.string(forKey: "BreakTime.lang").flatMap(Lang.init) ?? .zh }
