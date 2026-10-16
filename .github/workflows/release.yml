@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build universal app
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: swift --version
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Verify architectures
+        run: |
+          lipo -archs BreakTime.app/Contents/MacOS/BreakTime
+          lipo -archs BreakTime.app/Contents/MacOS/BreakTime | grep -q arm64
+          lipo -archs BreakTime.app/Contents/MacOS/BreakTime | grep -q x86_64
+
+      - name: Package
+        run: ./scripts/make-dist.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BreakTime-macos-universal
+          path: dist/*.zip
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
+          body: |
+            下载后解压并运行 `./install.sh`，或手动：
+
+            ```bash
+            cp -R BreakTime.app /Applications/
+            xattr -dr com.apple.quarantine /Applications/BreakTime.app
+            open /Applications/BreakTime.app
+            ```
+
+            通用二进制，Apple 芯片与 Intel Mac 均可运行，需要 macOS 14+。
+            未做公证签名，故需清除隔离标记（原因见 README）。

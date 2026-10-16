@@ -1,0 +1,11 @@
+.DS_Store
+.build/
+build/
+dist/
+BreakTime.app/
+*.dSYM/
+*.zip
+
+# Generated from Assets/icon.swift / Assets/AppIcon.iconset
+Assets/AppIcon.png
+Assets/makeicon

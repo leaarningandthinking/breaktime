@@ -1,0 +1,146 @@
+import Foundation
+
+enum Lang: String, Codable, CaseIterable {
+    case zh, en
+}
+
+/// Central string table. Chinese is default; English is the fallback source.
+final class AppLanguage: ObservableObject {
+    @Published var lang: Lang {
+        didSet { UserDefaults.standard.set(lang.rawValue, forKey: "BreakTime.lang") }
+    }
+
+    init() {
+        let raw = UserDefaults.standard.string(forKey: "BreakTime.lang")
+        lang = Lang(rawValue: raw ?? "") ?? .zh
+    }
+
+    func t(_ key: String) -> String {
+        Strings.table[lang]?[key] ?? Strings.table[.en]?[key] ?? key
+    }
+}
+
+enum Strings {
+    static let table: [Lang: [String: String]] = [
+        .zh: [
+            "menu.start": "立刻休息",
+            "menu.prefs": "偏好设置…",
+            "menu.quit": "退出 BreakTime",
+            "menu.none": "暂无休息安排",
+            "menu.in": "后",
+            "tab.activity": "动态",
+            "tab.rules": "规则",
+            "tab.general": "通用",
+            "sec.breaks": "休息",
+            "sec.options": "选项",
+            "break.normal": "标准休息",
+            "break.micro": "微休息",
+            "status.due": "还剩",
+            "status.done": "已完成",
+            "status.ago": "前",
+            "status.active": "进行中",
+            "status.paused": "已暂停",
+            "unit.sec": "秒",
+            "unit.min": "分钟",
+            "unit.hour": "小时",
+            "ed.every": "每",
+            "ed.for": "持续",
+            "ed.theme": "主题",
+            "ed.sound": "声音",
+            "ed.snooze": "推迟",
+            "ed.soundsHint": "声音：Basso、Glass、Ping、Pop、Sosumi · 主题放在 BreakTime.app/Contents/Resources/Themes/ 里",
+            "ov.done": "完成",
+            "ov.eyebrow": "休息时间",
+            "ov.remaining": "剩余",
+            "ov.hint": "按 Return 完成 · Esc 推迟",
+            "ov.postpone": "推迟",
+            "ov.skip": "跳过休息",
+            "rules.title": "休息到期时按规则执行。",
+            "rules.sub": "开会或看电影时自动跳过，不打断你。",
+            "rules.if": "如果",
+            "rules.frontmost": "在前台",
+            "rules.add": "添加应用规则",
+            "rules.hint": "Bundle ID，例如 com.tencent.meeting",
+            "rules.skip": "自动跳过",
+            "rules.postpone": "推迟 5 分钟",
+            "gen.login": "开机启动",
+            "gen.warn": "到期前 1 分钟提醒（小横幅）",
+            "gen.idle": "离开 60 秒后暂停倒计时（和 Time Out 的自然休息检测一样）。",
+            "gen.lang": "语言 / Language",
+            "gen.mode": "休息提醒样式",
+            "gen.full": "全屏覆盖",
+            "gen.float": "悬浮小窗",
+            "menu.pause": "暂停 1 小时",
+            "menu.resume": "恢复休息",
+            "menu.pausedUntil": "已暂停至",
+            "ed.addBreak": "添加休息",
+            "ed.delete": "删除",
+            "ed.name": "名称",
+            "ed.everyMin": "每隔（分钟）",
+            "ed.durSec": "持续（秒）",
+            "ed.snoozeMin": "推迟（分钟）",
+            "status.today": "今日完成",
+            "status.times": "次",
+        ],
+        .en: [
+            "menu.start": "Start Break Now",
+            "menu.prefs": "Preferences…",
+            "menu.quit": "Quit BreakTime",
+            "menu.none": "No breaks scheduled",
+            "menu.in": "in",
+            "tab.activity": "Activity",
+            "tab.rules": "Rules",
+            "tab.general": "General",
+            "sec.breaks": "Breaks",
+            "sec.options": "Options",
+            "break.normal": "Normal Break",
+            "break.micro": "Micro Break",
+            "status.due": "due",
+            "status.done": "done",
+            "status.ago": "ago",
+            "status.active": "active",
+            "status.paused": "paused",
+            "unit.sec": "sec",
+            "unit.min": "min",
+            "unit.hour": "h",
+            "ed.every": "Every",
+            "ed.for": "for",
+            "ed.theme": "Theme",
+            "ed.sound": "Sound",
+            "ed.snooze": "Snooze",
+            "ed.soundsHint": "Sounds: Basso, Glass, Ping, Pop, Sosumi · Themes live in BreakTime.app/Contents/Resources/Themes/",
+            "ov.done": "Done",
+            "ov.eyebrow": "BREAK TIME",
+            "ov.remaining": "LEFT",
+            "ov.hint": "Return to finish · Esc to postpone",
+            "ov.postpone": "Postpone",
+            "ov.skip": "Skip Break",
+            "rules.title": "Rules on what to do when a break is due.",
+            "rules.sub": "While in a meeting or movie, breaks automatically skip instead of interrupting.",
+            "rules.if": "If",
+            "rules.frontmost": "is frontmost",
+            "rules.add": "Add App Rule",
+            "rules.hint": "Bundle id, e.g. com.tencent.meeting",
+            "rules.skip": "automatically skip",
+            "rules.postpone": "postpone 5 min",
+            "gen.login": "Launch at login",
+            "gen.warn": "Warn 1 minute before (banner)",
+            "gen.idle": "Pause countdown while you are idle (60s), like Time Out's natural-break detection.",
+            "gen.lang": "语言 / Language",
+            "gen.mode": "Break overlay style",
+            "gen.full": "Fullscreen",
+            "gen.float": "Floating card",
+            "menu.pause": "Pause for 1 hour",
+            "menu.resume": "Resume breaks",
+            "menu.pausedUntil": "Paused until",
+            "ed.addBreak": "Add Break",
+            "ed.delete": "Delete",
+            "ed.name": "Name",
+            "ed.everyMin": "Every (min)",
+            "ed.durSec": "Duration (sec)",
+            "ed.snoozeMin": "Snooze (min)",
+            "status.today": "done today",
+            "status.times": "times",
+        ],
+    ]
+}
