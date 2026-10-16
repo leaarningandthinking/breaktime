@@ -4,6 +4,8 @@
 # Put this script next to BreakTime.app, then run:
 #   ./install.sh
 #
+# Override the destination with BREAKTIME_DEST=/some/where ./install.sh
+#
 # The quarantine flag is what makes macOS show "无法打开，因为 Apple 无法检查"
 # for apps downloaded from the internet. BreakTime is not notarized (that needs
 # a paid Apple Developer account), so we clear it explicitly.
@@ -18,7 +20,7 @@ if [[ ! -d "$APP" ]]; then
   exit 1
 fi
 
-DEST="/Applications"
+DEST="${BREAKTIME_DEST:-/Applications}"
 if [[ ! -w "$DEST" ]]; then
   DEST="$HOME/Applications"
   mkdir -p "$DEST"
